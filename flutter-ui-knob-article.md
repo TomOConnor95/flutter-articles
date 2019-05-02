@@ -11,8 +11,8 @@ Comments
 
 ## Intro
 
-Flutter is an Open Source portable UI toolkit by Google, which is great for cross platform app development. Blah blah... for more
-One of the great things about Flutter that no other cross platform app development tool can do is to define new custom UI elemets bllah blah blah...
+Flutter is an open source portable UI toolkit made by Google, which is great for cross platform app development. Blah blah... for more
+One of the great things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code.
 In this Flutter tutorial I will demonstrate how easy it is to create your own custom UI elements from scratch.
 
 A common UI element, especially in music software applications is a knob.
@@ -23,13 +23,16 @@ In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets)
 
 [do TLDR thing here][gif of the final product of the lesson.]
 
-I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen the 'hello world' flutter Counter app. (See this tutorial (LINK) to get you started otherwise).
+Flutter already has a widget with a very similar behaviour to the one we are creating, the `Slider` widget (you can see the full source code for Slider here: (LINK)).
+The key difference between the slider and the knob we wish to create is visual: a slider converts a linear input guesture to a linear animation whereas the our knob will convert a linear input guesture to a rotational animation (The more complicated version a knob which uses a rotational guesture instead will be covered in a future tutorial).
+
+I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the Counter App (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See this tutorial (LINK) to get you started otherwise).
 
 ## Basic setup
 
-We will start from the "Counter App" described in the Introduction (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode)
+We will start from a simple testbed for our new custom widget using a `Slider` widget, and a `Text` widget to display the slider's value. (TODO: Make a GIF instead of static image)
 
-Here I have removed the unneccesary code to give a good starting point
+<img src="./slider-testbed.png" width="300"/>
 
 File: `main.dart`
 
@@ -48,54 +51,15 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Tutorial'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Make new element here!',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
-
-Flutter already has a widget with a very similar behaviour to the one we are creating, the Slider Widget (you can see the full source code for Slider here: (LINK)).
-The main difference between the slider and the knob we wish to create is that a slider is linear input -> linear output whereas the knob is linear -> rotational.  
-Let's make a knob with the same interface to Flutter's built in Slider widget.
-
-We will begin by making a testbed for the new widget comprising a slider.
-
-Let's start with adding a `_value` attribute, and a `_setValue` handling the state of our Stateful Widget: `_MyHomePageState`
-
-```
-class _MyHomePageState extends State<MyHomePage> {
-  double _value = 0.0;
-  void _setvalue(double value) => setState(() => _value = value);
-  ...
-```
-
-From there, we can add a Text Widget (<- caps to widget or not?) to display the value and a Slider widget, to test out the setValue function.
-
-```
-class _MyHomePageState extends State<MyHomePage> {
-  double _value = 0.0;
-  void _setvalue(double value) => setState(() => _value = value);
+  // A variable to store the slider's value
+  double _value = 0.0;  
+  // A callback for the slider to use to modify the its value
+  void _setValue(double value) => setState(() => _value = value);
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Slider(value: _value, onChanged: _setvalue),
+            Slider(value: _value, onChanged: _setValue),
             Text(
               'Value: ${_value.toStringAsFixed(3)}',
             ),
@@ -119,12 +83,39 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 
+In the `_MyHomePageState` widget's state we have a `_value` attribute used to store the current value of the slider and a `_setValue` function used by the slider to modify this value.
+
+```
+class _MyHomePageState extends State<MyHomePage> {
+  double _value = 0.0;
+  void _setValue(double value) => setState(() => _value = value);
+  ...
+```
+
+The slider's interface is very simple. To use it, simply add it to the `_MyHomePageState` widget's `build` method, and pass it `_value` and `_setValue` as parameters.
+
+```
+Slider(value: _value, onChanged: _setValue),
+```
+
+The `Text` widget is also passed `_value` as a parameter, however we round it to 3 decimal places.
+```
+Text(
+  'Value: ${_value.toStringAsFixed(3)}',
+),
+```
+
 ## The design bit: Custom knob widget appearance
 
-First we will design a simple Knob. There are two approaches to making a new UI widget from scratch:
+First we will design a simple knob. There are two approaches to making a new UI widget from scratch:
 
-- _composing_ together other widgets. This is the easiest option, used here.
-- use the CustomPaint widget to draw paint the widget at a low level out of lines, circles, arcs etc. (See image of other knob design). This is themost powerful option that will be covered in a future tutorial.
+- _Composing_ together other widgets. This is the easiest option, used here.
+- Using the CustomPaint widget to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.
+<div style="display flex">
+  <img src="./composition-knob.png" width="150"/>
+  <img src="./fancy-knob.gif" width="300"/>
+  <figcaption>Composition based knob (left) vs custom painted knob (right)</figcaption>
+</div>
 
 We will make the knob out of a circle and an arrow icon. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
 
@@ -165,7 +156,7 @@ To map our `_value` variable to the desired angle, we can do the caculation at t
 ```
 class _MyHomePageState extends State<MyHomePage> {
   double _value = 0.0;
-  void _setvalue(double value) => setState(() => _value = value);
+  void _setValue(double value) => setState(() => _value = value);
 
   static const double minAngle = -160;
   static const double maxAngle = 160;
@@ -249,7 +240,7 @@ onVerticalDragUpdate: (DragUpdateDetails details) {
   double newValue = _value + changeInValue;
   double clippedValue = min(max(newValue, 0), 1);
 
-  _setvalue(clippedValue)
+  _setValue(clippedValue)
 },
 ```
 
