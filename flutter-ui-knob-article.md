@@ -17,22 +17,26 @@ In this Flutter tutorial I will demonstrate how easy it is to create your own cu
 
 A common UI element, especially in music software applications is a knob.
 
-![Massive soft synth](./massive.jpg)
+<img src="./massive.jpg" width="600"/>
+<figcaption>The software synthesiser <i>Massive</i>. Note the 31 Knobs in the UI</figcaption>
 
 In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own (the full source code of mine is avaliable here (LINK)).
 
-[do TLDR thing here][gif of the final product of the lesson.]
+[do TLDR thing here]
+<img src="./final-knob.png" width="300"/>[Make a gif version of this!]
 
 Flutter already has a widget with a very similar behaviour to the one we are creating, the `Slider` widget (you can see the full source code for Slider here: (LINK)).
 The key difference between the slider and the knob we wish to create is visual: a slider converts a linear input guesture to a linear animation whereas the our knob will convert a linear input guesture to a rotational animation (The more complicated version a knob which uses a rotational guesture instead will be covered in a future tutorial).
 
-I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the Counter App (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See this tutorial (LINK) to get you started otherwise).
+I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the `Counter App` (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See this tutorial (LINK) to get you started otherwise).
 
 ## Basic setup
 
 We will start from a simple testbed for our new custom widget using a `Slider` widget, and a `Text` widget to display the slider's value. (TODO: Make a GIF instead of static image)
 
 <img src="./slider-testbed.png" width="300"/>
+
+The following code is based off the `Counter App` (See introduction).
 
 File: `main.dart`
 
@@ -108,14 +112,14 @@ Text(
 ## The design bit: Custom knob widget appearance
 
 First we will design a simple knob. There are two approaches to making a new UI widget from scratch:
-
-- _Composing_ together other widgets. This is the easiest option, used here.
-- Using the CustomPaint widget to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.
 <div style="display flex">
-  <img src="./composition-knob.png" width="150"/>
+  <img src="./composition-knob.png" width="170"/>
   <img src="./fancy-knob.gif" width="300"/>
-  <figcaption>Composition based knob (left) vs custom painted knob (right)</figcaption>
 </div>
+
+- _Composing_ together other widgets (left). This is the easiest option, used here.
+- Using the CustomPaint widget (right) to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.
+
 
 We will make the knob out of a circle and an arrow icon. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
 
@@ -133,7 +137,7 @@ ClipOval(
 
 ## Simple behaviour: Custom Knob Widget - Continuous
 
-We will begin by making the knob respond to continuous values so it is straightforward. Next part of this article will address discrete values which a bit trickier to handle.
+In this tutorial we will make the knob respond to continuous values. The next tutorial will address discrete values which a bit trickier to handle.
 There are two key parts to making a knob. Firstly we need the knob widget to respond to the `_value` attribute, and then we need to make it respond to the user input by calling `_setValue` method.
 
 ### Part 1: Visually respond to \_value
