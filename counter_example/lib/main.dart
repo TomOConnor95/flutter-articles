@@ -15,25 +15,27 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   double _value = 0.0;
-  void _setvalue(double value) => setState(() => _value = value);
+  void _setValue(double value) => setState(() => _value = value);
+  static const double minValue = 0;
+  static const double maxValue = 10;
 
   static const double minAngle = -160;
   static const double maxAngle = 160;
   static const double sweepAngle = maxAngle - minAngle;
 
-  static const double distanceToAngle = 0.007;
-
+  static const double distanceToAngle = 0.007 * (maxValue - minValue);
 
   @override
   Widget build(BuildContext context) {
-    double _angle = (((_value*320) - 160) / 360) * 2 * pi;
+    double _normalisedValue = (_value - minValue)/(maxValue - minValue);
+    double _angle = (minAngle + (_normalisedValue*(sweepAngle))* 2 * pi / 360;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Tutorial'),
@@ -43,29 +45,32 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Transform.rotate(
-              angle: _angle, 
+              angle: _angle,
               child: GestureDetector(
                 onVerticalDragUpdate: (DragUpdateDetails details) {
-                  double changeInY = - details.delta.dy;
+                  double changeInY = -details.delta.dy;
                   print(changeInY);
                   double changeInValue = distanceToAngle * changeInY;
                   double newValue = _value + changeInValue;
-                  double clippedValue = min(max(newValue, 0), 1);
-  
-                  _setvalue(clippedValue);
+                  double clippedValue = min(max(newValue, minValue), maxValue);
+
+                  _setValue(clippedValue);
                 },
                 child: ClipOval(
-                  child: Container(
-                    color: Colors.blue,
-                    child: Icon(Icons.arrow_upward,
-                      color: Colors.white,
-                      size: 50,
-                    )
-                  )
-                ),
+                    child: Container(
+                        color: Colors.blue,
+                        child: Icon(
+                          Icons.arrow_upward,
+                          color: Colors.white,
+                          size: 50,
+                        ))),
               ),
             ),
-            Slider(value: _value, onChanged: _setvalue),
+            Slider(
+                value: _value,
+                onChanged: _setValue,
+                min: minValue,
+                max: maxValue),
             Text(
               'Value: ${_value.toStringAsFixed(3)}',
             ),

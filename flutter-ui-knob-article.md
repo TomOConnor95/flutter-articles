@@ -1,34 +1,27 @@
 # Flutter Tutorial - Custom User Input Knob using GuestureDetector
 
-Comments
-
-- Decide on a case for Flutter?
-- Can you make stuff foldable/unfoldable? (like long code snippets)
-- Decide on a case for Widget
-- Not sure I like the whole future tense tone throughout the article "We will", sounds a bit like a paper and wordy. Might just be a personal preference though, please keep it if you prefer :)
-- squash together hello world and slider
-- Keywords in content and title 
-
 ## Intro
 
-Flutter is an open source portable UI toolkit made by Google, which is great for cross platform app development. Blah blah... for more
+[Flutter](https://flutter.dev/) is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (See [Hummingbird](https://flutter.dev/web)).
 One of the great things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code.
-In this Flutter tutorial I will demonstrate how easy it is to create your own custom UI elements from scratch.
+In this Flutter tutorial series I will demonstrate how easy it is to create your own custom UI elements from scratch.
+
+------------------------------------------------------------------------------------------------------
 
 A common UI element, especially in music software applications is a knob.
 
 <img src="./massive.jpg" width="600"/>
-<figcaption>The software synthesiser <i>Massive</i>. Note the 31 Knobs in the UI</figcaption>
+<figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption>
 
 In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own (the full source code of mine is avaliable here (LINK)).
 
 [do TLDR thing here]
 <img src="./final-knob.png" width="300"/>[Make a gif version of this!]
 
-Flutter already has a widget with a very similar behaviour to the one we are creating, the `Slider` widget (you can see the full source code for Slider here: (LINK)).
-The key difference between the slider and the knob we wish to create is visual: a slider converts a linear input guesture to a linear animation whereas the our knob will convert a linear input guesture to a rotational animation (The more complicated version a knob which uses a rotational guesture instead will be covered in a future tutorial).
+Flutter already has a widget with a very similar behaviour to the one we are creating, the [`Slider` widget](https://api.flutter.dev/flutter/material/Slider-class.html) (you can see the full source code for Slider [on GitHub](https://github.com/flutter/flutter/blob/7a4c33425d/packages/flutter/lib/src/material/slider.dart#L91)).
+The key difference between the slider and the knob we wish to create is visual: a slider converts a linear input guesture to a linear animation whereas the our knob will convert a linear input guesture to a rotational animation (You can also make a more life-like version a knob which uses rotational input guesture instead, and this will be covered in a future tutorial).
 
-I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the `Counter App` (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See this tutorial (LINK) to get you started otherwise).
+I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the `Counter App` (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See [this tutorial](https://flutterbyexample.com/dissecting-the-counter-app/) to get you started otherwise).
 
 ## Basic setup
 
@@ -60,10 +53,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // A variable to store the slider's value
   double _value = 0.0;  
-  // A callback for the slider to use to modify the its value
   void _setValue(double value) => setState(() => _value = value);
+
+  static const double _minValue = 0;
+  static const double _maxValue = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +69,12 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Slider(value: _value, onChanged: _setValue),
+            Slider(
+              value: _value,
+              onChanged: _setValue,
+              min: _minValue,
+              max: _maxValue,
+            ),
             Text(
               'Value: ${_value.toStringAsFixed(3)}',
             ),
@@ -96,10 +95,15 @@ class _MyHomePageState extends State<MyHomePage> {
   ...
 ```
 
-The slider's interface is very simple. To use it, simply add it to the `_MyHomePageState` widget's `build` method, and pass it `_value` and `_setValue` as parameters.
+The slider's interface is very simple. To use it, simply add it to the `_MyHomePageState` widget's `build` method, and pass it `_value` and `_setValue` as parameters. Setting the range of the slider is also straghtforward: pass in optional parameters for the min and max value.
 
 ```
-Slider(value: _value, onChanged: _setValue),
+Slider(
+  value: _value,
+  onChanged: _setValue,
+  min: _minValue,
+  max: _maxValue,
+),
 ```
 
 The `Text` widget is also passed `_value` as a parameter, however we round it to 3 decimal places.
@@ -140,12 +144,12 @@ ClipOval(
 In this tutorial we will make the knob respond to continuous values. The next tutorial will address discrete values which a bit trickier to handle.
 There are two key parts to making a knob. Firstly we need the knob widget to respond to the `_value` attribute, and then we need to make it respond to the user input by calling `_setValue` method.
 
-### Part 1: Visually respond to \_value
+## Part 1: Visually respond to \_value
 
 To make our knob rotate we can simply wrap it in a rotation widget.
-It needs to rotate from a minimum angle to a maximum angle as the value changes from 0 to 1.
+It needs to rotate from a minimum angle to a maximum angle as the value changes from `_minValue_` to `_maxValue`.
 
-To do this we will need to do a little bit of maths so let's import Dart's math library:
+To do this we will need to do a little bit of maths so let's import Dart's math library at the top of our file:
 
 ```
 import 'dart:math';
@@ -153,14 +157,30 @@ import 'dart:math';
 
 This lets us use `pi` to get the value Pi (3.1415...)
 
-As the arrow marker starts pointing vertically, we will set the minimum angle as -160° and the maximum angle as +160°. The total sweep angle is therefore 320° (See diagram). We want the final angle to be in radians.
+As the arrow marker starts pointing vertically, set the minimum angle as -160° and the maximum angle as +160°. The total sweep angle is therefore 320° (See diagram). We want the final angle to be in radians.
 
-To map our `_value` variable to the desired angle, we can do the caculation at the start of the build method:
 
+We can use _linear interpolation_ to combine `minValue`, `maxValue` and `_value` to get a value between 0 and 1:
+```
+double _normalisedValue = (_value - minValue)/(maxValue - minValue)
+```
+
+Next use `_normalisedValue` variable calculate the desired angle. We are again using linear interpolation to convert to an angle in degrees, then multiplying by `2 * pi /360` to convert to radians.
+
+```
+double _angle = (minAngle + (_normalisedValue*(sweepAngle)) * 2 * pi / 360;
+```
+
+<img src="./linear_interpolation.png" width="700"/>
+
+ we can do the calculation at the start of the build method:
 ```
 class _MyHomePageState extends State<MyHomePage> {
   double _value = 0.0;
   void _setValue(double value) => setState(() => _value = value);
+
+  static const double minValue = 0;
+  static const double maxValue = 10;
 
   static const double minAngle = -160;
   static const double maxAngle = 160;
@@ -168,7 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double _angle = ((minAngle + (_value*(sweepAngle))) / 360) * 2 * pi;
+    double _normalisedValue = (_value - minValue)/(maxValue - minValue)
+    double _angle = ((minAngle + (_normalisedValue*(sweepAngle))) / 360) * 2 * pi;
     return Scaffold(
       ...
 ```
@@ -191,10 +212,10 @@ Transform.rotate(
 ```
 
 Now if we move the slider, our knob should respond correctly.
-(GIF) Link to full source code up to here
+(GIF) [Link to full source code up to here]
 This pattern of using a slider (or several sliders) to test the behaviour of another UI element is very useful when testing the new UI element, as it allows you to get the visual behaviour correct before working on the actual user input.
 
-### Part 2: Respond to user input
+## Part 2: Respond to user input
 
 In this section we will make the knob actually respond to being dragged. We will make the knob such that it rotates when the user drags it in a vertical direction (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscocity to the knob, but we'll save these for another time).
 
@@ -226,7 +247,11 @@ Now we need to use these `changeInY` value to actually change the angle. The ste
 - Limit the resulting value to be between 0 and 1.
 - call `_setValue` with the new value
 
-(Yet another "First we will".........) First we will define a constant which is the number needed to map from `changeInY` to `changeInValue`:
+And here is how to acheive this in the code:
+
+-------------------------------------------------------------------------------
+
+Define a constant `distanceToAngle` which is the number needed to map from `changeInY` to `changeInValue`:
 
 ```
 class _MyHomePageState extends State<MyHomePage> {
@@ -235,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ...
 ```
 
-Now we use this in the onVerticalDragUpdate method:
+Now we use this in the `onVerticalDragUpdate` method:
 
 ```
 onVerticalDragUpdate: (DragUpdateDetails details) {
@@ -248,21 +273,13 @@ onVerticalDragUpdate: (DragUpdateDetails details) {
 },
 ```
 
+Now we have enerything set up! Drag the knob and see that the value changes correctly!
+
 Now that we have a fully functioning knob, let's tidy up our code and move the knob into its own component.
 
 ### Moving the knob into a Stateless Component
 
-### Setting a min/max value for the knob
 
-The Slider widget has min & max parameters, and this will also be needed to make our knob useful.
-
-- Show how to use linear interpolation to combine min, max and value to get normalised_value (NICE PICTURE OF LINEAR INTERPOLATION)
-  value_norm = (value-min)/(max-min)
-
-- Show how to use linear interpolation to combine min, max and normalised_value to get value
-  value = min + value_norm \* (max - min)
-
-- Add min and max params to the knob widget to set range and show the linear interpolation? (Or do this later on once the basic knob is working)
 
 ## other ideas...
 
