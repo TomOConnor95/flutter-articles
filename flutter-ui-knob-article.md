@@ -11,7 +11,7 @@ A common UI element, especially in music software applications is a knob.
 <img src="./massive.jpg" width="600"/>
 <figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption>
 
-In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own (the full source code of mine is avaliable here (LINK)).
+In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own ([the full source code of the knob we'll make is avaliable here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib)).
 
 [do TLDR thing here]
 <img src="./final-knob.png" width="300"/>[Make a gif version of this!]
@@ -487,5 +487,5 @@ Widget build(BuildContext context) {
 
 ## Conclusion
 
-I hope you enjoyed this article, got everything to work. If you got stuck at any point the full source code is avaliable [here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib).
+I hope you enjoyed this article, got everything to work. If you got stuck at any point [the full source code is avaliable here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib).
 There's lots more we can do to customise this and make it more visually pleasing. The `_normalisedValue` variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
