@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'dart:math';
+import './knob.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,16 +25,8 @@ class _MyHomePageState extends State<MyHomePage> {
   static const double minValue = 0;
   static const double maxValue = 10;
 
-  static const double minAngle = -160;
-  static const double maxAngle = 160;
-  static const double sweepAngle = maxAngle - minAngle;
-
-  static const double distanceToAngle = 0.007 * (maxValue - minValue);
-
   @override
   Widget build(BuildContext context) {
-    double _normalisedValue = (_value - minValue)/(maxValue - minValue);
-    double _angle = (minAngle + (_normalisedValue*(sweepAngle))* 2 * pi / 360;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,27 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Transform.rotate(
-              angle: _angle,
-              child: GestureDetector(
-                onVerticalDragUpdate: (DragUpdateDetails details) {
-                  double changeInY = -details.delta.dy;
-                  print(changeInY);
-                  double changeInValue = distanceToAngle * changeInY;
-                  double newValue = _value + changeInValue;
-                  double clippedValue = min(max(newValue, minValue), maxValue);
-
-                  _setValue(clippedValue);
-                },
-                child: ClipOval(
-                    child: Container(
-                        color: Colors.blue,
-                        child: Icon(
-                          Icons.arrow_upward,
-                          color: Colors.white,
-                          size: 50,
-                        ))),
-              ),
+            Knob(
+              value: _value,
+              color: Colors.blue,
+              onChanged: _setValue,
+              min: minValue,
+              max: maxValue,
+              size: 50
             ),
             Slider(
                 value: _value,

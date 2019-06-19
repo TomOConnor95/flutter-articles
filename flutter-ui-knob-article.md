@@ -1,8 +1,6 @@
 # Flutter Tutorial - Custom User Input Knob using GuestureDetector
 
-## Intro
-
-[Flutter](https://flutter.dev/) is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (See [Hummingbird](https://flutter.dev/web)).
+[Flutter](https://flutter.dev/) is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (see [Hummingbird](https://flutter.dev/web)).
 One of the great things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code.
 In this Flutter tutorial series I will demonstrate how easy it is to create your own custom UI elements from scratch.
 
@@ -144,7 +142,7 @@ ClipOval(
 In this tutorial we will make the knob respond to continuous values. The next tutorial will address discrete values which a bit trickier to handle.
 There are two key parts to making a knob. Firstly we need the knob widget to respond to the `_value` attribute, and then we need to make it respond to the user input by calling `_setValue` method.
 
-## Part 1: Visually respond to \_value
+### Part 1: Visually respond to \_value
 
 To make our knob rotate we can simply wrap it in a rotation widget.
 It needs to rotate from a minimum angle to a maximum angle as the value changes from `_minValue_` to `_maxValue`.
@@ -189,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double _normalisedValue = (_value - minValue)/(maxValue - minValue)
-    double _angle = ((minAngle + (_normalisedValue*(sweepAngle))) / 360) * 2 * pi;
+    double _angle = (minAngle + _normalisedValue * sweepAngle) / 360 * 2 * pi;
     return Scaffold(
       ...
 ```
@@ -215,7 +213,7 @@ Now if we move the slider, our knob should respond correctly.
 (GIF) [Link to full source code up to here]
 This pattern of using a slider (or several sliders) to test the behaviour of another UI element is very useful when testing the new UI element, as it allows you to get the visual behaviour correct before working on the actual user input.
 
-## Part 2: Respond to user input
+### Part 2: Respond to user input
 
 In this section we will make the knob actually respond to being dragged. We will make the knob such that it rotates when the user drags it in a vertical direction (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscocity to the knob, but we'll save these for another time).
 
@@ -240,7 +238,7 @@ Transform.rotate(
 Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that dragging upwards gives a negatve value, so we need to account for this by changing the logic to `double changeInY = -details.delta.dy;`
 (See GIF)
 
-Now we need to use these `changeInY` value to actually change the angle. The steps are as follows:
+Now we need to use these `changeInY` value to actually change the angle. ç
 
 - Convert the `changeInY` value to a change in `_value`.
 - Add this `changeInValue` to the current value.
@@ -256,7 +254,7 @@ Define a constant `distanceToAngle` which is the number needed to map from `chan
 ```
 class _MyHomePageState extends State<MyHomePage> {
   ...
-  static const double distanceToAngle = 0.007;
+  static const double distanceToAngle = 0.007 * (maxValue - minValue);
   ...
 ```
 
@@ -275,24 +273,219 @@ onVerticalDragUpdate: (DragUpdateDetails details) {
 
 Now we have enerything set up! Drag the knob and see that the value changes correctly!
 
-Now that we have a fully functioning knob, let's tidy up our code and move the knob into its own component.
+## Moving the knob into a Stateless Component
 
-### Moving the knob into a Stateless Component
+Now that we have a fully functioning knob, let's tidy up our code and move the knob into its own component so that it can be used wherever we like in our Flutter projects.
 
+-----------------------------------------------------------------------------------------
 
+Create a new file for the knob, and make a basic stateless widget
 
-## other ideas...
+File: `knob.dart`
 
-### Make background for knob with ticks??
+```
+import 'package:flutter/material.dart';
+import 'dart:math';
 
-### Bonus: Use \_value to add more styling to knob??
+class Knob extends StatefulWidget {
+  // Parameters go here
+  @override
+  State<StatefulWidget> createState() => KnobState();
+}
 
-Show changing the border thickness of the knob
+class KnobState extends State<Knob> {
+  @override
+  Widget build(BuildContext context) {
+    return (
+      // The widgets to build go here
+    );
+  }
+}
+```
 
-### Bonus: Put use GIF for knobface??
+When our knob was written in the same widget as the rest of the page we could use the variables `_value`, `_setValue`, `minValue` and `maxValue` in the build method of the knob. Now that we are extracting the knob to its own widget, we need to add some parameters to the widget to pass in these values. It is important to get the types right for each of the parameters as Dart is a strongly typed language. 
 
-# Blog article pt.2 make the knob handle interger values?
+```
+class Knob extends StatefulWidget {
 
-In the previous article we made a simple knob that handles continuous input values, using a stateless widget and a guesture detector.
+  // Define the parameters of this widget
+  final double value;
+  final double min;
+  final double max;
 
-In this article we will make the knob handle integer values. Do do this our knob now needs some internal state: we need to store a continuous internal value for display purposes.
+  // ValueChanged<type> is a type built into Dart for a function that changes a value of type <type>
+  final ValueChanged<double> onChanged;
+
+  // Define a constructor for the widget which uses these parameters
+  Knob({this.value, this.min = 0, this.max = 1, this.onChanged});
+
+  @override
+  State<StatefulWidget> createState() => KnobState();
+}
+```
+
+Copy the render code for the knob from `main.dart` into the build method of the new widget, and move the constants `minAngle`, `maxAngle` and `sweepAngle` into the `KnobState`. You must change the variables used in the render method to the widget's parameters:
+
+- `_value` -> `widget.value`
+- `_setValue` -> `widget.onChange`
+- `minValue` -> `widget.min`
+- `maxValue` -> `widget.max`
+
+```
+class KnobState extends State<Knob> {
+
+  // These are static constants because they are in internal parameters of the knob that
+  // can't be changed from the outside
+  static const double minAngle = -160;
+  static const double maxAngle = 160;
+  static const double sweepAngle = maxAngle - minAngle;
+  
+  @override
+  Widget build(BuildContext context) {
+    // distanceToAngle now depends on potentially non-constant parameters,
+    // so must be defined in the build method
+    double distanceToAngle = 0.007 * (widget.max - widget.min);
+
+    double _normalisedValue = (widget.value - widget.min)/(widget.max - widget.min);
+    double _angle = (minAngle + _normalisedValue * sweepAngle) * 2 * pi / 360;
+    return Transform.rotate(
+      angle: _angle,
+      child: GestureDetector(
+        onVerticalDragUpdate: (DragUpdateDetails details) {
+          double changeInY = -details.delta.dy;
+          double changeInValue = distanceToAngle * changeInY;
+          double newValue = widget.value + changeInValue;
+          double clippedValue = min(max(newValue, widget.min), widget.max);
+
+          widget.onChanged(clippedValue);
+        },
+        child: ClipOval(
+          child: Container(
+            color: widget.color,
+            child: Icon(
+              Icons.arrow_upward,
+              color: Colors.white,
+              size: 50,
+            )
+          )
+        ),
+      ),
+    );
+  }
+}
+```
+
+Now import `Knob` in `main.dart`, and use it in the build method. The `import 'dart:math';` statement should be moved into `knob.dart`.
+
+```
+import 'package:flutter/material.dart';
+import './knob.dart';
+
+...
+
+class _MyHomePageState extends State<MyHomePage> {
+  double _value = 0.0;
+  void _setValue(double value) => setState(() => _value = value);
+  static const double minValue = 0;
+  static const double maxValue = 10;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter Tutorial'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Knob(
+              value: _value,
+              onChanged: _setValue,
+              min: minValue,
+              max: maxValue,
+            ),
+            Slider(
+                value: _value,
+                onChanged: _setValue,
+                min: minValue,
+                max: maxValue),
+            Text(
+              'Value: ${_value.toStringAsFixed(3)}',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+Now that we've made the slider into its own widget, it is very easy to use anywhere else in your apps that you might use a slider.
+
+## Finishing touches
+
+To make the `Knob` widget more customisable we can add some extra parameters to change the color and size of the knob:
+
+```
+class Knob extends StatefulWidget {
+
+  ...
+
+  // Two extra parameters to make the widget more easy to customise
+  final double size;
+  final Color color;
+
+  ...
+
+  // Add these parameters to the constructor
+  Knob({this.value, this.min = 0, this.max = 1, this.onChanged, this.color = Colors.blue, this.size = 50});
+
+  ...
+}
+```
+
+Use the `color` parameter to set the color of the `Container` in the render method. Wrap all of the widgets in the render method in a Center widget and a Container widget, and use the `size` parameter to set the height and width of the container, and the size of the `Icon`.
+
+```
+class KnobState extends State<Knob> {
+
+...
+
+@override
+Widget build(BuildContext context) {
+  ...
+  double size = widget.size;
+  return Center(
+    child: Container(
+      width: size,
+      height: size,
+      child: Transform.rotate(
+        angle: _angle,
+        child: GestureDetector(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            ...
+          },
+          child: ClipOval(
+            child: Container(
+              color: widget.color,
+              child: Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+                size: size,
+              )
+            )
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+```
+
+## Conclusion
+
+I hope you enjoyed this article, got everything to work. If you got stuck at any point the full source code is avaliable here [LINK!!!].
+There's lots more we can do to customise this and make it more visually pleasing. The `_normalisedValue` variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
