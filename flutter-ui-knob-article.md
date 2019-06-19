@@ -487,5 +487,5 @@ Widget build(BuildContext context) {
 
 ## Conclusion
 
-I hope you enjoyed this article, got everything to work. If you got stuck at any point the full source code is avaliable here [LINK!!!].
+I hope you enjoyed this article, got everything to work. If you got stuck at any point the full source code is avaliable [here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib).
 There's lots more we can do to customise this and make it more visually pleasing. The `_normalisedValue` variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
