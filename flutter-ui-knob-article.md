@@ -1,7 +1,11 @@
 # Flutter Tutorial - Custom User Input Knob using GuestureDetector
 
+<!-- Make more exciting / enthusiastic -->
+
 [Flutter](https://flutter.dev/) is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (see [Hummingbird](https://flutter.dev/web)).
-One of the great things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code.
+
+One of the amazing things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code. This gives you the ability to highly customise the look and feel of your app, as you are no longer stuck with the built in components of iOS or Android, and you don't have to rely on 3rd party libraries. No longer do you have to tell your designer "No I can't find a component to do that, can we find something simpler".
+
 In this Flutter tutorial series I will demonstrate how easy it is to create your own custom UI elements from scratch.
 
 ------------------------------------------------------------------------------------------------------
@@ -10,6 +14,7 @@ A common UI element, especially in music software applications is a knob.
 
 <img src="./massive.jpg" width="600"/>
 <figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption>
+<!-- Need to make this caption clearer -->
 
 In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own ([the full source code of the knob we'll make is avaliable here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib)).
 
@@ -17,7 +22,8 @@ In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets)
 <img src="./final-knob.png" width="300"/>[Make a gif version of this!]
 
 Flutter already has a widget with a very similar behaviour to the one we are creating, the [`Slider` widget](https://api.flutter.dev/flutter/material/Slider-class.html) (you can see the full source code for Slider [on GitHub](https://github.com/flutter/flutter/blob/7a4c33425d/packages/flutter/lib/src/material/slider.dart#L91)).
-The key difference between the slider and the knob we wish to create is visual: a slider converts a linear input guesture to a linear animation whereas the our knob will convert a linear input guesture to a rotational animation (You can also make a more life-like version a knob which uses rotational input guesture instead, and this will be covered in a future tutorial).
+A slider and a knob have the same functionality: they control the value of a single parameter based on user input
+The key difference between the slider and the knob we will create is visual: a slider converts a linear input guesture to a linear animation whereas we will convert a linear input guesture to a rotational animation (You can also make a more life-like version a knob which uses rotational input guesture instead, and this will be covered in a future tutorial).
 
 I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the `Counter App` (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See [this tutorial](https://flutterbyexample.com/dissecting-the-counter-app/) to get you started otherwise).
 
@@ -84,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 
+I'll now explain the key changes that were made to make this testbed.
+
 In the `_MyHomePageState` widget's state we have a `_value` attribute used to store the current value of the slider and a `_setValue` function used by the slider to modify this value.
 
 ```
@@ -93,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ...
 ```
 
-The slider's interface is very simple. To use it, simply add it to the `_MyHomePageState` widget's `build` method, and pass it `_value` and `_setValue` as parameters. Setting the range of the slider is also straghtforward: pass in optional parameters for the min and max value.
+The `Slider` widget was added it to the `_MyHomePageState` widget's `build` method, and passed `_value` and `_setValue` as parameters. Setting the range of the slider was done using the optional parameters `min` and `max`.
 
 ```
 Slider(
@@ -104,7 +112,7 @@ Slider(
 ),
 ```
 
-The `Text` widget is also passed `_value` as a parameter, however we round it to 3 decimal places.
+The `Text` widget was also passed `_value` as a parameter, however we first rounded it to 3 decimal places.
 ```
 Text(
   'Value: ${_value.toStringAsFixed(3)}',
