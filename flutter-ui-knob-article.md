@@ -60,8 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double _value = 0.0;  
   void _setValue(double value) => setState(() => _value = value);
 
-  static const double _minValue = 0;
-  static const double _maxValue = 10;
+  static const double minValue = 0;
+  static const double maxValue = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Slider(
               value: _value,
               onChanged: _setValue,
-              min: _minValue,
-              max: _maxValue,
+              min: minValue,
+              max: maxValue,
             ),
             Text(
               'Value: ${_value.toStringAsFixed(3)}',
@@ -107,8 +107,8 @@ The `Slider` widget was added it to the `_MyHomePageState` widget's `build` meth
 Slider(
   value: _value,
   onChanged: _setValue,
-  min: _minValue,
-  max: _maxValue,
+  min: minValue,
+  max: maxValue,
 ),
 ```
 
@@ -153,7 +153,7 @@ There are two key parts to making a knob. Firstly we need the knob widget to res
 ### Part 1: Visually respond to \_value
 
 To make our knob rotate we can simply wrap it in a rotation widget.
-It needs to rotate from a minimum angle to a maximum angle as the value changes from `_minValue_` to `_maxValue`.
+It needs to rotate from a minimum angle to a maximum angle as the value changes from `minValue` to `maxValue`.
 
 To do this we will need to do a little bit of maths so let's import Dart's math library at the top of our file:
 
