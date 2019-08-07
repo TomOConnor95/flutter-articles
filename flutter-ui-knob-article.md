@@ -128,10 +128,10 @@ First we will design a simple knob. There are two approaches to making a new UI 
 </div>
 
 - _Composing_ together other widgets (left). This is the easiest option, used here.
-- Using the CustomPaint widget (right) to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.
+- Using the `CustomPaint` widget (right) to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.
 
 
-We will make the knob out of a circle and an arrow icon. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
+We will make the knob out of a circle and an arrow icon. Circles can be easy made by wrapping a `ClipOval` widget around a `Container`. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
 
 ```
 ClipOval(
@@ -225,7 +225,7 @@ This pattern of using a slider (or several sliders) to test the behaviour of ano
 
 In this section we will make the knob actually respond to being dragged. We will make the knob such that it rotates when the user drags it in a vertical direction (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscocity to the knob, but we'll save these for another time).
 
-The first step is to wrap our knob in a GestureDetector, and provide a onVerticalDragUpdate function which sets what happens when the user drags the knob in a vertical direction.
+The first step is to wrap our knob in a GestureDetector, and provide an `onVerticalDragUpdate` function which sets what happens when the user drags the knob in a vertical direction.
 
 ```
 Transform.rotate(
@@ -243,7 +243,7 @@ Transform.rotate(
 ),
 ```
 
-Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that dragging upwards gives a negatve value, so we need to account for this by changing the logic to `double changeInY = -details.delta.dy;`
+Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that dragging upwards gives a negative value, so we need to account for this by changing the logic to `double changeInY = -details.delta.dy;`
 (See GIF)
 
 Now we need to use these `changeInY` value to actually change the angle. ç
@@ -279,7 +279,7 @@ onVerticalDragUpdate: (DragUpdateDetails details) {
 },
 ```
 
-Now we have enerything set up! Drag the knob and see that the value changes correctly!
+Now we have everything set up! Drag the knob and see that the value changes correctly!
 
 ## Moving the knob into a Stateless Component
 
@@ -287,9 +287,9 @@ Now that we have a fully functioning knob, let's tidy up our code and move the k
 
 -----------------------------------------------------------------------------------------
 
-Create a new file for the knob, and make a basic stateless widget
+Create a new file for the knob in the `lib/` folder, and make a basic stateless widget
 
-File: `knob.dart`
+File: `lib/knob.dart`
 
 ```
 import 'package:flutter/material.dart';
