@@ -1,4 +1,4 @@
-# Flutter Tutorial - Custom User Input Knob using GuestureDetector
+<h1>Flutter Tutorial - Custom User Input Knob using GuestureDetector</h1>
 
 <!-- Make more exciting / enthusiastic -->
 
@@ -11,15 +11,50 @@ In this Flutter tutorial series I will demonstrate how easy it is to create your
 ------------------------------------------------------------------------------------------------------
 
 A common UI element, especially in music software applications is a knob.
-
-<img src="./massive.jpg" width="600"/>
-<figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption>
-<!-- Need to make this caption clearer -->
+<div style="display: flex; justify-content: center">
+  <div style="border: 1px solid grey; width: 500px">
+    <img src="./massive.jpg" width="500"/>
+    <figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption>
+  </div>
+</div>
 
 In [Flutter's widget catalogue](https://flutter.dev/docs/development/ui/widgets) there is no knob element for us to use out of the box, however it is easy to make your own ([the full source code of the knob we'll make is avaliable here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib)).
+ Here is the knob we will create in this tutorial:
+ 
+ 
+<div style="display: flex; justify-content: space-evenly">
+  <img src="./final-knob.png" width="300" height="531"/>
 
-[do TLDR thing here]
-<img src="./final-knob.png" width="300"/>[Make a gif version of this!]
+
+<div style="border: 1px solid grey; width: 55%; padding:10px">
+
+  <h3>TLDR:</h3>
+
+  I've published the code from this lesson as a [Flutter package](https://github.com/TomOConnor95/flutter-knob) named `flutter_knob`. If you want to skip the tutorial and just use this in your project simply add the dependency to you `pubspec.yaml`:
+
+  ```
+  dependencies:
+    flutter:
+      sdk: flutter
+    flutter_knob: // Add it here
+  ```
+
+  Import it using:
+
+  ```
+  import 'package:flutter_knob/flutter_knob.dart';
+  ```
+
+  Use it like:
+
+  ```
+  Knob(value: _value, onChanged: _setValue)
+  ```
+
+  And see [these instructions](https://github.com/TomOConnor95/flutter-knob/blob/master/README.md) for a working example.
+</div>
+</div>
+
 
 Flutter already has a widget with a very similar behaviour to the one we are creating, the [`Slider` widget](https://api.flutter.dev/flutter/material/Slider-class.html) (you can see the full source code for Slider [on GitHub](https://github.com/flutter/flutter/blob/7a4c33425d/packages/flutter/lib/src/material/slider.dart#L91)).
 A slider and a knob have the same functionality: they control the value of a single parameter based on user input
@@ -27,11 +62,14 @@ The key difference between the slider and the knob we will create is visual: a s
 
 I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the `Counter App` (created by running the terminal command `flutter create .` or using the command `Flutter: New Project` in vscode). (See [this tutorial](https://flutterbyexample.com/dissecting-the-counter-app/) to get you started otherwise).
 
-## Basic setup
+<h2>Basic setup</h1>
 
 We will start from a simple testbed for our new custom widget using a `Slider` widget, and a `Text` widget to display the slider's value. (TODO: Make a GIF instead of static image)
 
-<img src="./slider-testbed.png" width="300"/>
+<div style="display: flex; justify-content: center">
+  <img src="./slider-testbed.png" width="300" height="531"/>
+</div>
+
 
 The following code is based off the `Counter App` (See introduction).
 
@@ -119,12 +157,14 @@ Text(
 ),
 ```
 
-## The design bit: Custom knob widget appearance
+<h2>The design bit: Custom knob widget appearance</h2>
 
 First we will design a simple knob. There are two approaches to making a new UI widget from scratch:
-<div style="display flex">
-  <img src="./composition-knob.png" width="170"/>
-  <img src="./fancy-knob.gif" width="300"/>
+<div style=" display: flex; justify-content: center">
+  <div>
+    <img src="./composition-knob.png" width="170"/>
+    <img src="./fancy-knob.gif" width="300"/>
+  </div>
 </div>
 
 - _Composing_ together other widgets (left). This is the easiest option, used here.
@@ -145,12 +185,12 @@ ClipOval(
 ),
 ```
 
-## Simple behaviour: Custom Knob Widget - Continuous
+<h2>Simple behaviour: Custom Knob Widget - Continuous</h2>
 
 In this tutorial we will make the knob respond to continuous values. The next tutorial will address discrete values which a bit trickier to handle.
 There are two key parts to making a knob. Firstly we need the knob widget to respond to the `_value` attribute, and then we need to make it respond to the user input by calling `_setValue` method.
 
-### Part 1: Visually respond to \_value
+<h3>Part 1: Visually respond to <i>_value</i></h3>
 
 To make our knob rotate we can simply wrap it in a rotation widget.
 It needs to rotate from a minimum angle to a maximum angle as the value changes from `minValue` to `maxValue`.
@@ -177,9 +217,11 @@ Next use `_normalisedValue` variable calculate the desired angle. We are again u
 double _angle = (minAngle + (_normalisedValue*(sweepAngle)) * 2 * pi / 360;
 ```
 
-<img src="./linear_interpolation.png" width="700"/>
+<div style="display: flex;  justify-content: center">
+  <img src="./linear_interpolation.png" width="500" height="416">
+</div>
+We can do the calculation at the start of the build method:
 
- we can do the calculation at the start of the build method:
 ```
 class _MyHomePageState extends State<MyHomePage> {
   double _value = 0.0;
@@ -194,13 +236,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double _normalisedValue = (_value - minValue)/(maxValue - minValue)
+    double _normalisedValue = (_value - minValue)/(maxValue - minValue);
     double _angle = (minAngle + _normalisedValue * sweepAngle) / 360 * 2 * pi;
     return Scaffold(
       ...
 ```
 
-We can then simply wrap our widgets in a `Transform.rotate()` widget, and simply pass it our new computed angle:
+We can then simply wrap our widgets in a `Transform.rotate()` widget, and pass it our new computed angle:
 
 ```
 Transform.rotate(
@@ -217,11 +259,10 @@ Transform.rotate(
 ),
 ```
 
-Now if we move the slider, our knob should respond correctly.
-(GIF) [Link to full source code up to here]
+Now if we move the slider, our knob should respond correctly. (TODO: GIF). [Here is the full source code so far incase you've got lost](https://github.com/TomOConnor95/flutter-articles/blob/master/counter_example/lib/main-slider-controlling-knob.dart).
 This pattern of using a slider (or several sliders) to test the behaviour of another UI element is very useful when testing the new UI element, as it allows you to get the visual behaviour correct before working on the actual user input.
 
-### Part 2: Respond to user input
+<h3>Part 2: Respond to user input</h3>
 
 In this section we will make the knob actually respond to being dragged. We will make the knob such that it rotates when the user drags it in a vertical direction (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscocity to the knob, but we'll save these for another time).
 
@@ -281,7 +322,7 @@ onVerticalDragUpdate: (DragUpdateDetails details) {
 
 Now we have everything set up! Drag the knob and see that the value changes correctly!
 
-## Moving the knob into a Stateless Component
+<h2>Moving the knob into a Stateless Component</h2>
 
 Now that we have a fully functioning knob, let's tidy up our code and move the knob into its own component so that it can be used wherever we like in our Flutter projects.
 
@@ -432,7 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 Now that we've made the slider into its own widget, it is very easy to use anywhere else in your apps that you might use a slider.
 
-## Finishing touches
+<h2>Finishing touches</h2>
 
 To make the `Knob` widget more customisable we can add some extra parameters to change the color and size of the knob:
 
@@ -493,7 +534,9 @@ Widget build(BuildContext context) {
 
 ```
 
-## Conclusion
+<h2>Conclusion</h2>
 
 I hope you enjoyed this article, got everything to work. If you got stuck at any point [the full source code is avaliable here](https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib).
 There's lots more we can do to customise this and make it more visually pleasing. The `_normalisedValue` variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
+
+</div>
