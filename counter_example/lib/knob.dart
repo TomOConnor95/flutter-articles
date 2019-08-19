@@ -46,7 +46,6 @@ class KnobState extends State<Knob> {
         child: GestureDetector(
             onVerticalDragUpdate: (DragUpdateDetails details) {
               double changeInY = -details.delta.dy;
-              print(changeInY);
               double changeInValue = distanceToAngle * changeInY;
               double newValue = widget.value + changeInValue;
               double clippedValue = min(max(newValue, widget.min), widget.max);
