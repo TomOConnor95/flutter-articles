@@ -43,28 +43,29 @@ class KnobState extends State<Knob> {
       child: Container(
         width: size,
         height: size,
-        child: Transform.rotate(
-          angle: _angle,
-          child: GestureDetector(
+        child: GestureDetector(
             onVerticalDragUpdate: (DragUpdateDetails details) {
               double changeInY = -details.delta.dy;
+              print(changeInY);
               double changeInValue = distanceToAngle * changeInY;
               double newValue = widget.value + changeInValue;
               double clippedValue = min(max(newValue, widget.min), widget.max);
 
               widget.onChanged(clippedValue);
             },
-            child: ClipOval(
-              child: Container(
-                color: widget.color,
-                child: Icon(
-                  Icons.arrow_upward,
-                  color: Colors.white,
-                  size: size,
+            child: Transform.rotate(
+              angle: _angle,
+              child: ClipOval(
+                child: Container(
+                  color: widget.color,
+                  child: Icon(
+                    Icons.arrow_upward,
+                    color: Colors.white,
+                    size: size,
+                  )
                 )
-              )
+              ),
             ),
-          ),
         ),
       ),
     );

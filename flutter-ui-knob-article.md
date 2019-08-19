@@ -269,19 +269,20 @@ In this section we will make the knob actually respond to being dragged. We will
 The first step is to wrap our knob in a GestureDetector, and provide an `onVerticalDragUpdate` function which sets what happens when the user drags the knob in a vertical direction.
 
 ```
-Transform.rotate(
-  angle: _angle,
-  child: GestureDetector(
-    onVerticalDragUpdate: (DragUpdateDetails details) {
-      double changeInY = details.delta.dy;
-      print(changeInY);
-      // Respond to the changeInY
-    },
+GestureDetector(
+  onVerticalDragUpdate: (DragUpdateDetails details) {
+    double changeInY = details.delta.dy;
+    print(changeInY);
+    // Respond to the changeInY
+  },
+  child: Transform.rotate(
+    angle: _angle,
     child: ClipOval(
       ...
     ),
   ),
 ),
+
 ```
 
 Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that dragging upwards gives a negative value, so we need to account for this by changing the logic to `double changeInY = -details.delta.dy;`
@@ -397,17 +398,17 @@ class KnobState extends State<Knob> {
 
     double _normalisedValue = (widget.value - widget.min)/(widget.max - widget.min);
     double _angle = (minAngle + _normalisedValue * sweepAngle) * 2 * pi / 360;
-    return Transform.rotate(
-      angle: _angle,
-      child: GestureDetector(
-        onVerticalDragUpdate: (DragUpdateDetails details) {
-          double changeInY = -details.delta.dy;
-          double changeInValue = distanceToAngle * changeInY;
-          double newValue = widget.value + changeInValue;
-          double clippedValue = min(max(newValue, widget.min), widget.max);
+    return GestureDetector(
+      onVerticalDragUpdate: (DragUpdateDetails details) {
+        double changeInY = -details.delta.dy;
+        double changeInValue = distanceToAngle * changeInY;
+        double newValue = widget.value + changeInValue;
+        double clippedValue = min(max(newValue, widget.min), widget.max);
 
-          widget.onChanged(clippedValue);
-        },
+        widget.onChanged(clippedValue);
+      },
+      child: Transform.rotate(
+        angle: _angle,
         child: ClipOval(
           child: Container(
             color: widget.color,
