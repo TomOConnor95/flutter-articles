@@ -1,9 +1,10 @@
-<a href="https://flutter.dev/">Flutter</a> is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (see <a href="https://flutter.dev/web">Hummingbird</a>).
+One of the amazing things about <a href="https://flutter.dev/">Flutter</a> that no other cross platform app development tool can do is to <b>define new custom UI elements using nothing but Dart code</b>.
 
-One of the amazing things about Flutter that no other cross platform app development tool can do is to define new custom UI elements using nothing but Dart code. This gives you the ability to highly customise the look and feel of your app, as you are no longer stuck with the built in components of iOS or Android, and you don't have to rely on 3rd party libraries. No longer do you have to tell your designer "No I can't find a component to do that, can we find something simpler".
+<hr>
 
-In this Flutter tutorial series I will demonstrate how easy it is to create your own custom UI elements from scratch.
-<div style="border: 1px solid grey;padding:10px">
+<h2>Introduction</h2>
+<a href="https://flutter.dev/">Flutter</a> is an open source portable UI toolkit made by Google, which is great for cross platform app development. From a single codebase you can deploy your code to iOS, Android, Desktop and Web (see <a href="https://flutter.dev/web">Hummingbird</a>). In this Flutter tutorial series I will demonstrate how easy it is to create your own custom UI elements from scratch. This gives you the ability to highly customise the look and feel of your app, as you are no longer stuck with the built in components of iOS or Android, and you don't have to rely on 3rd party libraries. No longer do you have to tell your designer "No I can't find a component to do that, can we find something simpler".
+<div style="border: 1px solid grey;padding: 10px">
 <h3>TLDR:</h3>
 I've published the code from this lesson as a <a href="https://github.com/TomOConnor95/flutter-knob">Flutter package</a> named `flutter_knob`. If you want to skip the tutorial and just use this in your project simply add the dependency to you `pubspec.yaml`:
 <pre><code>  dependencies:
@@ -25,8 +26,7 @@ And see <a href="https://github.com/TomOConnor95/flutter-knob/blob/master/README
 
 A common UI element, especially in music software applications is a knob.
 <div style="margin-bottom: 1rem">
-<div style="border: 1px solid grey;width: 500px">
-    <img src="https://blog.theodo.com/wp-content/uploads/2019/08/massive.jpg" width="500"><figcaption>The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</figcaption></div>
+<div style="border: 1px solid grey;width: 100%"><img src="https://blog.theodo.com/wp-content/uploads/2019/08/massive.jpg" width="100%">The software synthesiser <a href="https://www.native-instruments.com/en/products/komplete/synths/massive/"><i>Massive</i></a>. Note the 31 Knobs in the UI</div>
 </div>
 In <a href="https://flutter.dev/docs/development/ui/widgets">Flutter's widget catalogue</a> there is no knob element for us to use out of the box, however it is easy to make your own (<a href="https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib">the full source code of the knob we'll make is available here</a>).
 
@@ -39,8 +39,7 @@ The key difference between the slider and the knob we will create is visual: a s
 I will assume you have a basic knowledge of Flutter, Dart, Stateless and Stateful widgets, and have seen Flutter's "hello world" app, the <code>Counter App</code> (created by running the terminal command <code>flutter create .</code> or using the command <code>Flutter: New Project</code> in VSCode). (See <a href="https://flutterbyexample.com/dissecting-the-counter-app/">this tutorial</a> to get you started otherwise).
 <h2>Basic setup</h2>
 We will start from a simple testbed for our new custom widget using a <code>Slider</code> widget, and a <code>Text</code> widget to display the slider's value.
-<div>
-  <img src="https://blog.theodo.com/wp-content/uploads/2019/08/slider-testbed.gif" width="300" height="531"></div>
+<div><img src="https://blog.theodo.com/wp-content/uploads/2019/08/slider-testbed.gif" width="300" height="531"></div>
 The following code is based off the <code>Counter App</code> (See introduction).
 
 File: <code>main.dart</code>
@@ -103,7 +102,7 @@ In the <code>_MyHomePageState</code> widget's state we have a <code>_value</code
   void _setValue(double value) =&gt; setState(() =&gt; _value = value);
   ...
 </code></pre>
-The <code>Slider</code> widget was added it to the <code>_MyHomePageState</code> widget's <code>build</code> method, and passed <code>_value</code> and <code>_setValue</code> as parameters. Setting the range of the slider was done using the optional parameters <code>min</code> and <code>max</code>.
+The <code>Slider</code> widget was added to the <code>_MyHomePageState</code> widget's <code>build</code> method, and passed <code>_value</code> and <code>_setValue</code> as parameters. Setting the range of the slider was done using the optional parameters <code>min</code> and <code>max</code>.
 <pre><code>Slider(
   value: _value,
   onChanged: _setValue,
@@ -118,16 +117,15 @@ The <code>Text</code> widget was also passed <code>_value</code> as a parameter,
 </code></pre>
 <h2>The design bit: Custom knob widget appearance</h2>
 First we will design a simple knob. There are two approaches to making a new UI widget from scratch:
-<div>
-<div>
-    <img src="https://blog.theodo.com/wp-content/uploads/2019/08/composition-knob.gif" width="170">
-<img src="https://blog.theodo.com/wp-content/uploads/2019/08/fancy-knob.gif" width="300"></div>
+<div style="height: 180px;padding: 0 2rem">
+<div style="float: left"><img src="https://blog.theodo.com/wp-content/uploads/2019/08/composition-knob.gif" width="170"></div>
+<div style="float: right"><img style="float: right" src="https://blog.theodo.com/wp-content/uploads/2019/08/fancy-knob.gif" width="300"></div>
 </div>
 <ul>
  	<li><em>Composing</em> together other widgets (left). This is the easiest option, used here.</li>
  	<li>Using the <code>CustomPaint</code> widget (right) to paint the widget at a low level out of lines, circles, arcs etc. This is the most powerful option and will be covered in a future tutorial.</li>
 </ul>
-We will make the knob out of a circle and an arrow icon. Circles can be easy made by wrapping a <code>ClipOval</code> widget around a <code>Container</code>. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
+We will make the knob out of a circle and an arrow icon. Circles can be easily made by wrapping a <code>ClipOval</code> widget around a <code>Container</code>. This can be customised much more and you can use whatever widget or design you want, but we'll keep it simple for now.
 <pre><code>ClipOval(
   child: Container(
     color: Colors.blue,
@@ -139,10 +137,10 @@ We will make the knob out of a circle and an arrow icon. Circles can be easy mad
 ),
 </code></pre>
 <h2>Simple behaviour: Custom Knob Widget - Continuous</h2>
-In this tutorial we will make the knob respond to continuous values. The next tutorial will address discrete values which a bit trickier to handle.
+In this tutorial we will make the knob respond to <b>continuous values</b>. The next tutorial will address discrete values which a bit trickier to handle.
 There are two key parts to making a knob. Firstly we need the knob widget to respond to the <code>_value</code> attribute, and then we need to make it respond to the user input by calling <code>_setValue</code> method.
 <h3>Part 1: Visually respond to <i>_value</i></h3>
-To make our knob rotate we can simply wrap it in a rotation widget.
+To make our knob rotate we can simply wrap it in a <code>Transform.rotate()</code> widget.
 It needs to rotate from a minimum angle to a maximum angle as the value changes from <code>minValue</code> to <code>maxValue</code>.
 
 To do this we will need to do a little bit of maths so let's import Dart's math library at the top of our file:
@@ -158,8 +156,7 @@ We can use <em>linear interpolation</em> to combine <code>minValue</code>, <code
 Next use <code>_normalisedValue</code> variable calculate the desired angle. We are again using linear interpolation to convert to an angle in degrees, then multiplying by <code>2 * pi /360</code> to convert to radians.
 <pre><code>double _angle = (minAngle + (_normalisedValue*(sweepAngle)) * 2 * pi / 360;
 </code></pre>
-<div>
-  <img src="https://blog.theodo.com/wp-content/uploads/2019/08/linear_interpolation.png" width="500" height="416"></div>
+<div><img src="https://blog.theodo.com/wp-content/uploads/2019/08/linear_interpolation.png" width="500" height="416"></div>
 We can do the calculation at the start of the build method:
 <pre><code>class _MyHomePageState extends State&lt;MyHomePage&gt; {
   double _value = 0.0;
@@ -199,9 +196,9 @@ Now if we move the slider, our knob should respond correctly.
 <a href="https://github.com/TomOConnor95/flutter-articles/blob/master/counter_example/lib/main-slider-controlling-knob.dart">Here is the full source code so far incase you've got lost</a>.
 This pattern of using a slider (or several sliders) to test the behaviour of another UI element is very useful when testing the new UI element, as it allows you to get the visual behaviour correct before working on the actual user input.
 <h3>Part 2: Respond to user input</h3>
-In this section we will make the knob actually respond to being dragged. We will make the knob such that it rotates when the user drags it in a vertical direction (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscosity to the knob, but we'll save these for another time).
+In this section we will make the knob actually respond to being dragged. We will make the knob such that it <b>rotates when the user drags it in a vertical direction</b> (More complicated behaviours are possible, such as making the knob rotate as the user drags in a circle around it, or adding momentum and viscosity to the knob, but we'll save these for another time).
 
-The first step is to wrap our knob in a GestureDetector, and provide an <code>onVerticalDragUpdate</code> function which sets what happens when the user drags the knob in a vertical direction. It is important to put the `GestureDetector` outside of the `Transform.rotate` widget, as if you put in inside it the coordinates of the GestureDetector are affected by the transformation.
+The first step is to wrap our knob in a GestureDetector, and provide an <code>onVerticalDragUpdate</code> function which sets what happens when the user drags the knob in a vertical direction. It is important to put the <code>GestureDetector</code> outside of the <code>Transform.rotate</code> widget, as if you put in inside it the coordinates of the <code>GestureDetector</code> are affected by the transformation.
 <pre><code>GestureDetector(
   onVerticalDragUpdate: (DragUpdateDetails details) {
     double changeInY = details.delta.dy;
@@ -216,7 +213,7 @@ The first step is to wrap our knob in a GestureDetector, and provide an <code>on
   ),
 ),
 </code></pre>
-Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that dragging upwards gives a negative value, so we need to account for this by changing the logic to <code>double changeInY = -details.delta.dy;</code>
+Now when you drag on the knob, you should see values being printed in the debug console. The values represent the number of pixels that you have moved. You'll notice that <b>dragging upwards gives a negative value</b>, so we need to account for this by changing the logic to <code>double changeInY = -details.delta.dy;</code>
 <img src="https://blog.theodo.com/wp-content/uploads/2019/08/change-in-y.gif" width="500">
 
 Now we need to use these <code>changeInY</code> value to actually change the angle.
@@ -238,8 +235,8 @@ Define a constant <code>distanceToAngle</code> which is the number needed to map
 </code></pre>
 Now we use this in the <code>onVerticalDragUpdate</code> method:
 <pre><code>onVerticalDragUpdate: (DragUpdateDetails details) {
-  double changeInY = - details.delta.dy;
-  double changeInValue = distanceToAngle * changeInY; // Note the negative sign
+  double changeInY = - details.delta.dy; // Note the negative sign
+  double changeInValue = distanceToAngle * changeInY;
   double newValue = _value + changeInValue;
   double clippedValue = min(max(newValue, 0), 1);
 
@@ -386,7 +383,7 @@ class _MyHomePageState extends State&lt;MyHomePage&gt; {
 </code></pre>
 Now that we've made the slider into its own widget, it is very easy to use anywhere else in your apps that you might use a slider.
 <h2>Finishing touches</h2>
-To make the <code>Knob</code> widget more customisable we can add some extra parameters to change the color and size of the knob:
+To make the <code>Knob</code> widget more customisable we can add some extra parameters to change the <b>color</b> and <b>size</b> of the knob:
 <pre><code>class Knob extends StatefulWidget {
 
   ...
@@ -440,4 +437,6 @@ Widget build(BuildContext context) {
 </code></pre>
 <h2>Conclusion</h2>
 I hope you enjoyed this article, got everything to work. If you got stuck at any point <a href="https://github.com/TomOConnor95/flutter-articles/tree/master/counter_example/lib">the full source code is avaliable here</a>.
-There's lots more we can do to customise this and make it more visually pleasing. The <code>_normalisedValue</code> variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
+There's lots more we can do to customise this and make it more visually pleasing. The <code>_normalisedValue</code> variable we used in our calculations is particularly useful in modifying other properties of the knob, such as color, opacity, size, border-width and shape. It is also possible to replace the face of the knob with images or even gifs!! See the following GIF for inspiration:
+<img src="https://blog.theodo.com/wp-content/uploads/2019/08/knob-examples.gif" width="300">
+We will try out some of these approaches in future tutorials. But for now, do some experimenting for your self and see what you can come up with!
